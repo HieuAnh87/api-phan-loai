@@ -19,10 +19,10 @@ BATCH_SIZE = args.batch_size
 NUM_LABEL = 4
 device = torch.device(0)
 
-pipe = pipeline("text-classification", model="HieuAnh/phobert-travel")
+# pipe = pipeline("text-classification", model="HieuAnh/phobert-travel")
 
-tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH, do_lower_case=True)
-model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH,
+tokenizer = AutoTokenizer.from_pretrained("HieuAnh/phobert-travel", do_lower_case=True)
+model = AutoModelForSequenceClassification.from_pretrained("HieuAnh/phobert-travel",
                                                            num_labels=NUM_LABEL,
                                                            output_attentions=False,
                                                            output_hidden_states=False)

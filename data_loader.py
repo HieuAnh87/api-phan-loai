@@ -13,33 +13,27 @@ class MyDataLoader():
 
     def load_csv(self, dataset_path):
         df = pd.read_csv(dataset_path)
-        texts = df.text.values.tolist()
-        labels = df.label.values.tolist()
-        # texts_cut = []
+        texts = df.post_text.values.tolist()
+        labels = df.tag.values.tolist()
 
-        # for data in texts:
-        #     data_split = data.split(" ")
-        #     if len(data_split) < 100:
-        #         datas = data
-        #     else:
-        #         datas = data_split[40:]
-        #         datas = " ".join(datas)
-        #     texts_cut.append(datas)
+        label_0 = [i for i in labels if i == "AGENCY"]
+        label_1 = [i for i in labels if i == "PROTENTIAL"]
+        label_2 = [i for i in labels if i == "SHARING"]
+        label_3 = [i for i in labels if i == "SPAM"]
 
-        label_0 = [i for i in labels if int(i) == 0]
-        label_1 = [i for i in labels if int(i) == 1]
-        label_2 = [i for i in labels if int(i) == 2]
-
-        print('has {} label 0 in {} total label'.format(len(label_0), len(labels)))
-        print('has {} label 1 in {} total label'.format(len(label_1), len(labels)))
-        print('has {} label 2 in {} total label'.format(len(label_2), len(labels)))
+        print('has {} label AGENCY in {} total label'.format(len(label_0), len(labels)))
+        print('has {} label PROTENTIAL in {} total label'.format(len(label_1), len(labels)))
+        print('has {} label SHARING in {} total label'.format(len(label_2), len(labels)))
+        print('has {} label SPAM {} total label'.format(len(label_3), len(labels)))
 
         train_x, val_x, train_y, val_y = train_test_split(texts, labels, test_size=0.2, shuffle=True)
 
         return train_x, val_x, train_y, val_y
 
     def dataloader(self):
+        print("Loading dataloader...")
         train_x, val_x, train_y, val_y = self.load_csv(self.dataset_path)
+        # print(train_x[3])
 
         tokenizer_data_train = self.tokenizer.batch_encode_plus(train_x,
                                                                 add_special_tokens=True,
@@ -48,6 +42,7 @@ class MyDataLoader():
                                                                 max_length=self.max_length,
                                                                 truncation=True,
                                                                 return_tensors='pt')
+        print(tokenizer_data_train)
         tokenizer_data_val = self.tokenizer.batch_encode_plus(val_x,
                                                               add_special_tokens=True,
                                                               return_attention_mask=True,

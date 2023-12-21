@@ -13,7 +13,7 @@ class Trainer():
         self.train_loader = train_loader
         self.val_loader = val_loader
         self.device = device
-    
+
     def train(self):
         learning_rate = self.args.lr
         epochs = self.args.epochs
@@ -92,7 +92,7 @@ class Trainer():
                 pred = [np.argmax(lb).item() for lb in pred]
                 true_vals.append(inputs['labels'].cpu().numpy())
                 pred_vals.append(pred)
-                
+
             pred_vals = np.concatenate(pred_vals, axis=0)
             true_vals = np.concatenate(true_vals, axis=0)
 
@@ -102,9 +102,10 @@ class Trainer():
             train_f1_val = f1_score(true_vals, pred_vals, average="macro")
 
 
-            # print(train_f1_val)
-            # print("val accuracy on epochs:", epoch, "\naccuracy:", accuracy_val)
-            # print("val f1_score on epochs:", epoch, "\nf1_score: ", train_f1_val)
+            print(train_f1_val)
+            print("val accuracy on epochs:", epoch, "\naccuracy:", accuracy_val)
+            print("val f1_score on epochs:", epoch, "\nf1_score: ", train_f1_val)
+            print("====================================================")
 
             if train_f1_val >=  best_f1_score:
                 print("Accuracy score: ", accuracy_val)
