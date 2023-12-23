@@ -1,4 +1,5 @@
 import torch
+from sklearn.preprocessing import LabelEncoder
 from torch.utils.data import (DataLoader, TensorDataset)
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -13,6 +14,9 @@ class MyDataLoader():
 
     def load_csv(self, dataset_path):
         df = pd.read_csv(dataset_path)
+        # drop the row which has nan value
+        df = df.dropna()
+        df = df[df['tag'] != 'UNKNOW'].dropna()
         texts = df.post_text.values.tolist()
         labels = df.tag.values.tolist()
 
@@ -28,12 +32,26 @@ class MyDataLoader():
 
         train_x, val_x, train_y, val_y = train_test_split(texts, labels, test_size=0.2, shuffle=True)
 
+        # Khởi tạo trình mã hóa nhãn
+        label_encoder = LabelEncoder()
+
+        # Fit và chuyển đổi nhãn cho tập huấn luyện
+        train_y = label_encoder.fit_transform(train_y)
+
+        # Chuyển đổi nhãn cho tập validation
+        val_y = label_encoder.transform(val_y)
+
+        # In bảng ánh xạ giữa nhãn gốc và nhãn đã mã hóa
+        label_mapping = dict(zip(label_encoder.classes_, label_encoder.transform(label_encoder.classes_)))
+        print("Bảng ánh xạ nhãn:", label_mapping)
+
         return train_x, val_x, train_y, val_y
 
     def dataloader(self):
         print("Loading dataloader...")
         train_x, val_x, train_y, val_y = self.load_csv(self.dataset_path)
         # print(train_x[3])
+
 
         tokenizer_data_train = self.tokenizer.batch_encode_plus(train_x,
                                                                 add_special_tokens=True,
@@ -42,7 +60,7 @@ class MyDataLoader():
                                                                 max_length=self.max_length,
                                                                 truncation=True,
                                                                 return_tensors='pt')
-        print(tokenizer_data_train)
+        # print(tokenizer_data_train)
         tokenizer_data_val = self.tokenizer.batch_encode_plus(val_x,
                                                               add_special_tokens=True,
                                                               return_attention_mask=True,
@@ -50,6 +68,11 @@ class MyDataLoader():
                                                               max_length=self.max_length,
                                                               truncation=True,
                                                               return_tensors='pt')
+        print(type(train_x))
+        print("=====================================")
+        print(type(train_y))
+        # print(train_y.head())
+        print(train_y)
         input_ids_train = tokenizer_data_train['input_ids']
         attention_masks_train = tokenizer_data_train['attention_mask']
         labels_train = torch.tensor(train_y)
