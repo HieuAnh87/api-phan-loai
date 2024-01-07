@@ -51,7 +51,13 @@ query = """
         )
         """
 
-
+query_author = """
+        INSERT INTO smcc.authors (
+    "id", "link", "name", "avatar", "process", "createdAt", "updatedAt"
+        ) VALUES (
+            %(id)s, %(link)s, %(name)s, %(avatar)s, %(process)s, NOW(), NOW()
+        )
+"""
 # Execute the query for each row in the CSV file
 for row in data_from_csv:
     # print(row)
